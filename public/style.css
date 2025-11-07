@@ -1,0 +1,27 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+#sidebar-wrapper {
+  width: 240px;
+  min-height: 100vh;
+}
+
+#sidebar-wrapper .list-group-item {
+  border: none;
+  padding: 14px 20px;
+}
+
+#sidebar-wrapper .list-group-item.active {
+  background-color: #0d6efd;
+  color: white;
+  font-weight: 600;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.card-body h5 {
+  font-size: 0.9rem;
+}
