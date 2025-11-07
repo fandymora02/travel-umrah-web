@@ -1,4 +1,4 @@
-name: CI - Travel Umrah Web
+name: CI/CD - Travel Umrah Web
 
 on:
   push:
@@ -7,18 +7,21 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout kode repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
+      # 3️⃣ Cache npm (biar install lebih cepat)
       - name: Cache npm
         uses: actions/cache@v4
         with:
@@ -27,22 +30,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # 4️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # 5️⃣ Jalankan test (kalau ada)
       - name: Run tests (if any)
         run: npm test || echo "⚠️ No tests to run"
 
+      # 6️⃣ Install Podman
       - name: Install Podman
         run: |
           sudo apt-get update
           sudo apt-get install -y podman
 
+      # 7️⃣ Build image
       - name: Build Podman image
         run: podman build --format docker -t travel-umrah-web .
 
-      - name: Verify image
-        run: podman images
+      # 8️⃣ Login ke GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: CI Completed
-        run: echo "✅ CI pipeline completed successfully!"
+      # 9️⃣ Tag image untuk GHCR
+      - name: Tag image for GHCR
+        run: podman tag travel-umrah-web ghcr.io/${{ github.repository }}:latest
+
+      # 🔟 Push image ke GHCR
+      - name: Push image to GHCR
+        run: podman push ghcr.io/${{ github.repository }}:latest
+
+      # ✅ Selesai
+      - name: CI/CD Completed
+        run: echo "✅ CI/CD pipeline completed successfully!"
