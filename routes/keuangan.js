@@ -10,35 +10,47 @@ function generateId() {
 }
 
 // 🔹 GET semua data + filter
-router.get("/", (req, res) => {
-  const { tanggalAwal, tanggalAkhir, jenis, keyword } = req.query;
-  let query = "SELECT * FROM keuangan WHERE 1=1";
-  const params = [];
+// router.get("/", (req, res) => {
+//   const { tanggalAwal, tanggalAkhir, jenis, keyword } = req.query;
+//   let query = "SELECT * FROM keuangan WHERE 1=1";
+//   const params = [];
 
-  if (tanggalAwal) {
-    query += " AND tanggal >= ?";
-    params.push(tanggalAwal);
-  }
-  if (tanggalAkhir) {
-    query += " AND tanggal <= ?";
-    params.push(tanggalAkhir);
-  }
-  if (jenis) {
-    query += " AND jenis = ?";
-    params.push(jenis);
-  }
-  if (keyword) {
-    query += " AND deskripsi LIKE ?";
-    params.push(`%${keyword}%`);
-  }
+//   if (tanggalAwal) {
+//     query += " AND tanggal >= ?";
+//     params.push(tanggalAwal);
+//   }
+//   if (tanggalAkhir) {
+//     query += " AND tanggal <= ?";
+//     params.push(tanggalAkhir);
+//   }
+//   if (jenis) {
+//     query += " AND jenis = ?";
+//     params.push(jenis);
+//   }
+//   if (keyword) {
+//     query += " AND deskripsi LIKE ?";
+//     params.push(`%${keyword}%`);
+//   }
 
-  query += " ORDER BY tanggal DESC";
+//   query += " ORDER BY tanggal DESC";
 
-  db.all(query, params, (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
+//   db.all(query, params, (err, rows) => {
+//     if (err) return res.status(500).json({ error: err.message });
+//     res.json(rows);
+//   });
+// });
+
+router.get('/', (req, res) => {
+  db.all('SELECT * FROM keuangan', [], (err, rows) => {
+    if (err) {
+      console.error('Error ambil data keuangan:', err.message);
+      res.status(500).json({ error: err.message });
+    } else {
+      res.json(rows);
+    }
   });
 });
+
 
 // 🔹 GET by ID
 router.get("/:id", (req, res) => {

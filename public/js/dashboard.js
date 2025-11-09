@@ -1,12 +1,24 @@
+// =============================
+// DASHBOARD.JS (Versi Modern)
+// =============================
+
+// === SIDEBAR TOGGLE ===
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.getElementById("sidebar-wrapper");
+
 menuToggle.addEventListener("click", () => {
-  sidebar.classList.toggle("d-none");
+  sidebar.classList.toggle("collapsed");
 });
 
-// Fetch data summary
+// === LOAD DASHBOARD DATA ===
 async function loadDashboardData() {
+  // Tampilkan status loading di semua card
+  document.querySelectorAll(".card h3").forEach(el => {
+    el.innerText = "Loading...";
+  });
+
   try {
+    // Ambil data dari API
     const [jamaahRes, agenRes, keuanganRes] = await Promise.all([
       fetch("/api/jamaah"),
       fetch("/api/agen"),
@@ -17,24 +29,38 @@ async function loadDashboardData() {
     const agen = await agenRes.json();
     const keuangan = await keuanganRes.json();
 
-    // Hitung data
-    document.getElementById("totalJamaah").innerText = jamaah.length;
-    document.getElementById("totalAgen").innerText = agen.length;
+    // Hitung total data
+    const totalJamaah = jamaah.length;
+    const totalAgen = agen.length;
 
     const pemasukan = keuangan
-      .filter((k) => k.jenis === "Pemasukan")
-      .reduce((a, b) => a + b.nominal, 0);
-    const pengeluaran = keuangan
-      .filter((k) => k.jenis === "Pengeluaran")
+      .filter(k => k.jenis === "Pemasukan")
       .reduce((a, b) => a + b.nominal, 0);
 
+    const pengeluaran = keuangan
+      .filter(k => k.jenis === "Pengeluaran")
+      .reduce((a, b) => a + b.nominal, 0);
+
+    // Update elemen dashboard
+    document.getElementById("totalJamaah").innerText = totalJamaah;
+    document.getElementById("totalAgen").innerText = totalAgen;
     document.getElementById("totalPemasukan").innerText =
       "Rp " + pemasukan.toLocaleString("id-ID");
     document.getElementById("totalPengeluaran").innerText =
       "Rp " + pengeluaran.toLocaleString("id-ID");
 
-    // Chart
-    const ctx = document.getElementById("chartKeuangan");
+    // === GRAFIK KEUANGAN ===
+    const ctx = document.getElementById("chartKeuangan").getContext("2d");
+
+    // Gradien untuk chart
+    const gradientIncome = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientIncome.addColorStop(0, "#28a745");
+    gradientIncome.addColorStop(1, "#85e085");
+
+    const gradientExpense = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientExpense.addColorStop(0, "#dc3545");
+    gradientExpense.addColorStop(1, "#f7a6a6");
+
     new Chart(ctx, {
       type: "bar",
       data: {
@@ -43,19 +69,62 @@ async function loadDashboardData() {
           {
             label: "Keuangan (Rp)",
             data: [pemasukan, pengeluaran],
-            backgroundColor: ["#198754", "#dc3545"],
+            backgroundColor: [gradientIncome, gradientExpense],
+            borderRadius: 10,
           },
         ],
       },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: context =>
+                "Rp " + context.parsed.y.toLocaleString("id-ID"),
+            },
+          },
+        },
+        animation: {
+          duration: 1500,
+          easing: "easeOutBounce",
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: "#555",
+              font: { size: 13 },
+              callback: function (value) {
+                return "Rp " + value.toLocaleString("id-ID");
+              },
+            },
+          },
+          x: {
+            ticks: { color: "#555", font: { size: 13 } },
+          },
+        },
+      },
     });
+
+    console.log("✅ Data dashboard berhasil dimuat");
   } catch (err) {
-    console.error("Gagal memuat data dashboard:", err);
+    console.error("❌ Gagal memuat data dashboard:", err);
+    document.querySelectorAll(".card h3").forEach(el => {
+      el.innerText = "Error";
+    });
   }
 }
 
+// Jalankan saat halaman dimuat
 loadDashboardData();
 
-// Logout
+// Auto refresh setiap 1 menit
+setInterval(loadDashboardData, 60000);
+
+// === LOGOUT BUTTON ===
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  window.location.href = "/login.html";
+  if (confirm("Yakin ingin logout, bro?")) {
+    localStorage.removeItem("user");
+    window.location.href = "/login.html";
+  }
 });

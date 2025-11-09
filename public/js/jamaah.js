@@ -69,3 +69,4 @@ const table = document.getElementById('jamaahTable');
     }
 
     loadData();
+
