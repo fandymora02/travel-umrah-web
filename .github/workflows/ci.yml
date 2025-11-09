@@ -1,4 +1,4 @@
-name: CI - Travel Umrah Web
+name: CI/CD - Travel Umrah Web
 
 on:
   push:
