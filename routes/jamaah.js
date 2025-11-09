@@ -2,13 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
-// 🔹 Fungsi buat ID acak unik (contoh: JM-8A3C9F)
 function generateRandomId() {
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
   return `JM-${random}`;
 }
 
-// 🔹 GET semua data jamaah
 router.get('/', (req, res) => {
   db.all('SELECT * FROM jamaah', [], (err, rows) => {
     if (err) {
@@ -20,7 +18,6 @@ router.get('/', (req, res) => {
   });
 });
 
-// 🔹 POST tambah data jamaah baru
 router.post('/', (req, res) => {
   const { nama, alamat, no_hp, paket } = req.body;
   if (!nama || !alamat || !no_hp || !paket) {
@@ -35,7 +32,6 @@ router.post('/', (req, res) => {
   });
 });
 
-// 🔹 PUT edit/update data jamaah
 router.put('/:id', (req, res) => {
   const { nama, alamat, no_hp, paket } = req.body;
   const { id } = req.params;
@@ -48,7 +44,6 @@ router.put('/:id', (req, res) => {
   });
 });
 
-// 🔹 DELETE hapus data jamaah
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
   const query = 'DELETE FROM jamaah WHERE id = ?';

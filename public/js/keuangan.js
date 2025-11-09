@@ -21,7 +21,6 @@ async function loadData() {
     </tr>
   `).join('');
 
-  // Tambahkan event listener setelah tabel dirender
   document.querySelectorAll('.editBtn').forEach(btn => {
     btn.addEventListener('click', () => openEditModal(btn.dataset.id));
   });
@@ -30,7 +29,6 @@ async function loadData() {
   });
 }
 
-// Tambah Data 
 addForm.addEventListener('submit', async e => {
   e.preventDefault();
   const formData = Object.fromEntries(new FormData(addForm).entries());
@@ -46,7 +44,6 @@ addForm.addEventListener('submit', async e => {
   loadData();
 });
 
-// Buka Modal Edit
 async function openEditModal(id) {
   const res = await fetch(`${API_URL}/${id}`);
   const data = await res.json();
@@ -61,7 +58,6 @@ async function openEditModal(id) {
   modal.show();
 }
 
-//  Update Data 
 editForm.addEventListener('submit', async e => {
   e.preventDefault();
   const id = editForm.id.value;
@@ -77,12 +73,10 @@ editForm.addEventListener('submit', async e => {
   loadData();
 });
 
-// === Hapus Data ===
 async function deleteData(id) {
   if (!confirm('Yakin ingin menghapus transaksi ini?')) return;
   await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
   loadData();
 }
 
-// Load saat awal
 loadData();

@@ -2,7 +2,6 @@ const table = document.getElementById('jamaahTable');
     const addForm = document.getElementById('addForm');
     const editForm = document.getElementById('editForm');
 
-    // 🔹 Ambil semua data
     async function loadData() {
       const res = await fetch('/api/jamaah');
       const data = await res.json();
@@ -23,7 +22,6 @@ const table = document.getElementById('jamaahTable');
       });
     }
 
-    // 🔹 Tambah data baru
     addForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = Object.fromEntries(new FormData(addForm));
@@ -37,7 +35,6 @@ const table = document.getElementById('jamaahTable');
       loadData();
     });
 
-    // 🔹 Edit data (tampilkan di modal)
     function editData(id, nama, alamat, no_hp, paket) {
       const modal = new bootstrap.Modal(document.getElementById('editModal'));
       editForm.id.value = id;
@@ -48,7 +45,6 @@ const table = document.getElementById('jamaahTable');
       modal.show();
     }
 
-    // 🔹 Update data
     editForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = Object.fromEntries(new FormData(editForm));
@@ -61,7 +57,6 @@ const table = document.getElementById('jamaahTable');
       loadData();
     });
 
-    // 🔹 Hapus data
     async function deleteData(id) {
       if (!confirm('Yakin mau hapus data ini?')) return;
       await fetch(`/api/jamaah/${id}`, { method: 'DELETE' });

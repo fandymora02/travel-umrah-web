@@ -12,7 +12,6 @@
 
 <body class="bg-light">
   <div class="d-flex" id="wrapper">
-    <!-- Sidebar -->
     <div class="bg-white border-end" id="sidebar-wrapper">
       <div class="sidebar-heading text-center py-4 fw-bold fs-4 border-bottom">
          Travel Umrah
@@ -33,7 +32,6 @@
       </div>
     </div>
 
-    <!-- Page Content -->
     <div id="page-content-wrapper" class="w-100">
       <nav class="navbar navbar-light bg-white border-bottom shadow-sm px-3">
         <button class="btn btn-outline-secondary" id="menu-toggle">
@@ -98,8 +96,6 @@
     window.location.href = 'login.html';
   } else {
     document.getElementById('welcome').innerText = `Halo, ${user.username} (${user.role})`;
-
-    // Contoh: hanya admin yang bisa melihat menu keuangan
     if (user.role !== 'admin') {
       document.getElementById('menu-keuangan').style.display = 'none';
     }

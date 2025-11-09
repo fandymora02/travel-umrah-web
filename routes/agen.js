@@ -2,13 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 
-// 🔹 Fungsi buat ID unik agen (contoh: AG-3F7B2C)
 function generateRandomId() {
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
   return `AG-${random}`;
 }
 
-// 🔹 GET semua data agen
 router.get('/', (req, res) => {
   const query = 'SELECT * FROM agen';
   db.all(query, [], (err, rows) => {
@@ -20,7 +18,6 @@ router.get('/', (req, res) => {
   });
 });
 
-// 🔹 GET satu agen berdasarkan ID
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   const query = 'SELECT * FROM agen WHERE id = ?';
@@ -34,7 +31,6 @@ router.get('/:id', (req, res) => {
   });
 });
 
-// 🔹 POST tambah agen baru
 router.post('/', (req, res) => {
   const { nama, cabang, no_hp } = req.body;
 
@@ -53,7 +49,6 @@ router.post('/', (req, res) => {
   });
 });
 
-// 🔹 PUT update data agen
 router.put('/:id', (req, res) => {
   const { id } = req.params;
   const { nama, cabang, no_hp } = req.body;
@@ -75,7 +70,6 @@ router.put('/:id', (req, res) => {
   });
 });
 
-// 🔹 DELETE hapus agen
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
   const query = 'DELETE FROM agen WHERE id = ?';

@@ -1,10 +1,9 @@
-const API_URL = "/api/agen"; // endpoint backend
+const API_URL = "/api/agen"; 
 
 const agenTable = document.getElementById("agenTable");
 const addForm = document.getElementById("addForm");
 const editForm = document.getElementById("editForm");
 
-// 🔁 Ambil semua data agen dari backend
 async function loadAgen() {
   try {
     const res = await fetch(API_URL);
@@ -37,7 +36,6 @@ async function loadAgen() {
   }
 }
 
-// ➕ Tambah data agen baru
 addForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = Object.fromEntries(new FormData(addForm).entries());
@@ -57,7 +55,6 @@ addForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ✏️ Buka modal edit
 async function openEdit(id) {
   const res = await fetch(`${API_URL}/${id}`);
   const data = await res.json();
@@ -69,7 +66,6 @@ async function openEdit(id) {
   new bootstrap.Modal(document.getElementById("editModal")).show();
 }
 
-// 🔄 Update data agen
 editForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = Object.fromEntries(new FormData(editForm).entries());
@@ -89,7 +85,7 @@ editForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ❌ Hapus data agen
+
 async function deleteAgen(id) {
   if (!confirm("Yakin ingin menghapus data agen ini?")) return;
   const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
@@ -98,5 +94,5 @@ async function deleteAgen(id) {
   else alert("Gagal menghapus data agen!");
 }
 
-// 🚀 Jalankan saat halaman dibuka
+
 loadAgen();

@@ -1,8 +1,3 @@
-// =============================
-// DASHBOARD.JS (Versi Modern)
-// =============================
-
-// === SIDEBAR TOGGLE ===
 const menuToggle = document.getElementById("menu-toggle");
 const sidebar = document.getElementById("sidebar-wrapper");
 
@@ -10,15 +5,12 @@ menuToggle.addEventListener("click", () => {
   sidebar.classList.toggle("collapsed");
 });
 
-// === LOAD DASHBOARD DATA ===
 async function loadDashboardData() {
-  // Tampilkan status loading di semua card
   document.querySelectorAll(".card h3").forEach(el => {
     el.innerText = "Loading...";
   });
 
   try {
-    // Ambil data dari API
     const [jamaahRes, agenRes, keuanganRes] = await Promise.all([
       fetch("/api/jamaah"),
       fetch("/api/agen"),
@@ -29,7 +21,6 @@ async function loadDashboardData() {
     const agen = await agenRes.json();
     const keuangan = await keuanganRes.json();
 
-    // Hitung total data
     const totalJamaah = jamaah.length;
     const totalAgen = agen.length;
 
@@ -41,7 +32,6 @@ async function loadDashboardData() {
       .filter(k => k.jenis === "Pengeluaran")
       .reduce((a, b) => a + b.nominal, 0);
 
-    // Update elemen dashboard
     document.getElementById("totalJamaah").innerText = totalJamaah;
     document.getElementById("totalAgen").innerText = totalAgen;
     document.getElementById("totalPemasukan").innerText =
@@ -49,10 +39,8 @@ async function loadDashboardData() {
     document.getElementById("totalPengeluaran").innerText =
       "Rp " + pengeluaran.toLocaleString("id-ID");
 
-    // === GRAFIK KEUANGAN ===
     const ctx = document.getElementById("chartKeuangan").getContext("2d");
 
-    // Gradien untuk chart
     const gradientIncome = ctx.createLinearGradient(0, 0, 0, 400);
     gradientIncome.addColorStop(0, "#28a745");
     gradientIncome.addColorStop(1, "#85e085");
@@ -115,13 +103,12 @@ async function loadDashboardData() {
   }
 }
 
-// Jalankan saat halaman dimuat
 loadDashboardData();
 
-// Auto refresh setiap 1 menit
+
 setInterval(loadDashboardData, 60000);
 
-// === LOGOUT BUTTON ===
+
 document.getElementById("logoutBtn").addEventListener("click", () => {
   if (confirm("Yakin ingin logout, bro?")) {
     localStorage.removeItem("user");

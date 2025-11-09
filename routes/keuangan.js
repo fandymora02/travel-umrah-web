@@ -9,37 +9,6 @@ function generateId() {
   return `TRX-${random}${time}`;
 }
 
-// 🔹 GET semua data + filter
-// router.get("/", (req, res) => {
-//   const { tanggalAwal, tanggalAkhir, jenis, keyword } = req.query;
-//   let query = "SELECT * FROM keuangan WHERE 1=1";
-//   const params = [];
-
-//   if (tanggalAwal) {
-//     query += " AND tanggal >= ?";
-//     params.push(tanggalAwal);
-//   }
-//   if (tanggalAkhir) {
-//     query += " AND tanggal <= ?";
-//     params.push(tanggalAkhir);
-//   }
-//   if (jenis) {
-//     query += " AND jenis = ?";
-//     params.push(jenis);
-//   }
-//   if (keyword) {
-//     query += " AND deskripsi LIKE ?";
-//     params.push(`%${keyword}%`);
-//   }
-
-//   query += " ORDER BY tanggal DESC";
-
-//   db.all(query, params, (err, rows) => {
-//     if (err) return res.status(500).json({ error: err.message });
-//     res.json(rows);
-//   });
-// });
-
 router.get('/', (req, res) => {
   db.all('SELECT * FROM keuangan', [], (err, rows) => {
     if (err) {
@@ -51,8 +20,6 @@ router.get('/', (req, res) => {
   });
 });
 
-
-// 🔹 GET by ID
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   db.get("SELECT * FROM keuangan WHERE id = ?", [id], (err, row) => {
@@ -61,7 +28,6 @@ router.get("/:id", (req, res) => {
   });
 });
 
-// 🔹 POST tambah (ID random)
 router.post("/", (req, res) => {
   const { tanggal, deskripsi, nominal, jenis } = req.body;
   const id = generateId();
@@ -73,7 +39,6 @@ router.post("/", (req, res) => {
   });
 });
 
-// 🔹 PUT edit
 router.put("/:id", (req, res) => {
   const { id } = req.params;
   const { tanggal, deskripsi, nominal, jenis } = req.body;
@@ -84,7 +49,6 @@ router.put("/:id", (req, res) => {
   });
 });
 
-// 🔹 DELETE hapus
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
   db.run("DELETE FROM keuangan WHERE id = ?", [id], function (err) {
