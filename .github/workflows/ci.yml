@@ -31,7 +31,7 @@ jobs:
         run: npm install
 
       - name: Run tests (if any)
-        run: npm test || echo "⚠️ No tests to run"
+        run: npm test || echo " No tests to run"
 
       - name: Install Podman
         run: |
@@ -45,4 +45,4 @@ jobs:
         run: podman images
 
       - name: CI Completed
-        run: echo "✅ CI pipeline completed successfully!"
+        run: echo "CI pipeline completed successfully!"
