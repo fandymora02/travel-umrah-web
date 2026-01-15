@@ -1,48 +1,52 @@
-name: CI/CD - Travel Umrah Web
+name: CI/CD Kubernetes - Travel Umrah
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Login DockerHub
+        run: echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
 
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      - name: Build image
+        run: docker build -t ${{ secrets.DOCKER_USER }}/travel-umrah:latest .
 
-      - name: Install dependencies
-        run: npm install
+      - name: Push image
+        run: docker push ${{ secrets.DOCKER_USER }}/travel-umrah:latest
 
-      - name: Run tests (if any)
-        run: npm test || echo " No tests to run"
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
 
-      - name: Install Podman
+      - name: Configure kubeconfig
         run: |
-          sudo apt-get update
-          sudo apt-get install -y podman
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
-      - name: Build Podman image
-        run: podman build --format docker -t travel-umrah-web .
+      - name: Deploy to Kubernetes
+        run: kubectl rollout restart deployment travel-umrah
 
-      - name: Verify image
-        run: podman images
+      - name: Login DockerHub
+        run: echo "${{ secrets.DOCKER_PASS }}" | podman login docker.io -u ${{ secrets.DOCKER_USER }} --password-stdin
 
-      - name: CI Completed
-        run: echo "CI pipeline completed successfully!"
+      - name: Push image to DockerHub
+        run: podman tag travel-umrah-web docker.io/${{ secrets.DOCKER_USER }}/travel-umrah-web:latest
+
+      - name: Push
+        run: podman push docker.io/${{ secrets.DOCKER_USER }}/travel-umrah-web:latest
+
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
+          kubectl rollout restart deployment travel-umrah
+
