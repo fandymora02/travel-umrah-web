@@ -63,7 +63,7 @@ jobs:
       - name: Build Docker image
         run: docker build -t travel-umrah:latest .
 
-      # ===== KUBERNETES DEPLOY =====
+      # ===== KUBERNETES DEPLOY =======
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
